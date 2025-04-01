@@ -1,0 +1,37 @@
+name: Coverage Report
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  generate_coverage:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    name: Generate and Publish Coverage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'  # Use Python 3.9, or whichever version you need
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Generate .coverage
+        run: |
+          coverage run -m pytest tests  # Run tests in the "tests" directory
+
+      - name: Coverage comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
