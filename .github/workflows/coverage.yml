@@ -3,7 +3,7 @@ name: Pytest Coverage Report
 on:
   pull_request:
     branches:
-      - main  # You can adjust this to the appropriate branch
+      - main  # Adjust to your base branch if needed
 
 jobs:
   run-tests:
@@ -50,7 +50,7 @@ jobs:
         echo "::set-output name=pr_comment::${PR_COMMENT_BODY}"
 
     - name: Comment on PR with coverage results
-      uses: peter-evans/comment@v2
+      uses: peter-evans/comment@v3  # Updated to v3
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
