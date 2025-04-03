@@ -2,8 +2,6 @@ name: Pytest Coverage Report
 
 on:
   pull_request:
-    branches:
-      - main  # Adjust to your base branch if needed
 
 jobs:
   run-tests:
@@ -16,7 +14,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8'  # Adjust as needed
+        python-version: '3.8'
 
     - name: Install dependencies
       run: |
@@ -34,12 +32,9 @@ jobs:
 
     - name: Merge coverage reports for 'read' and 'write' markers
       run: |
-        # Install coverage tool to combine the reports
         pip install coverage
-        # Combine the coverage reports from both tests
         coverage combine coverage.xml
-        coverage html -d ./coverage_html  # Optionally generate HTML for review
-        # Create a merged coverage report
+        coverage html -d ./coverage_html
         coverage report --show-missing > merged_coverage_report.txt
 
     - name: Get PR details
@@ -50,7 +45,7 @@ jobs:
         echo "::set-output name=pr_comment::${PR_COMMENT_BODY}"
 
     - name: Comment on PR with coverage results
-      uses: peter-evans/comment@v3  # Updated to v3
+      uses: peter-evans/comment@v3.0.0  # Use a specific version here
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
