@@ -36,26 +36,3 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
 
-      - name: Run Additional Script
-        id: run-script
-        run: |
-          # Run your script here (e.g., python script.py)
-          python script.py > result.txt
-          
-      - name: Post script results as a comment
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const fs = require('fs');
-            const result = fs.readFileSync('result.txt', 'utf8');
-            const prNumber = ${{ github.event.pull_request.number }};
-            
-            const commentBody = `### Script Results\n\n\`\`\`\n${result}\n\`\`\``;
-            
-            const response = await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: prNumber,
-              body: commentBody,
-            });
