@@ -25,10 +25,11 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
+          pip install pytest pytest-cov  # Install pytest and pytest-cov for coverage
 
-      - name: Generate .coverage
+      - name: Generate .coverage file
         run: |
-          coverage run -m pytest tests  # Run tests in the "tests" directory
+          coverage run -m pytest --cov=api --cov-report=xml tests  # Run tests and generate coverage report in XML format
 
       - name: Coverage comment
         uses: py-cov-action/python-coverage-comment-action@v3
