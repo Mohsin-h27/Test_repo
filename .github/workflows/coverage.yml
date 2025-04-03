@@ -1,37 +1,64 @@
-name: Coverage Report
+name: Python CI with Coverage
 
 on:
-  pull_request:
   push:
     branches:
-      - "main"
+      - main  # Adjust the branch you want to trigger this workflow on
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  generate_coverage:
+  test:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
-    name: Generate and Publish Coverage
+
     steps:
-      - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        id: setup-python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'  # Use Python 3.9, or whichever version you need
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
 
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install coverage  # Install coverage tool
 
-      - name: Generate .coverage
-        run: |
-          coverage run -m pytest tests  # Run tests in the "tests" directory
+    - name: Run tests with coverage
+      run: |
+        coverage run -m unittest discover  # Run unittest tests with coverage
+        coverage report --show-missing  # Show coverage in terminal
+        coverage xml  # Generate XML report for GitHub comments
 
-      - name: Coverage comment
-        uses: py-cov-action/python-coverage-comment-action@v3
-        with:
-          GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
+    - name: Post coverage comments on GitHub PR
+      if: github.event_name == 'pull_request'  # Only run for PRs
+      run: |
+        # Parse the coverage report XML
+        coverage_result=$(python -c "
+import xml.etree.ElementTree as ET
+tree = ET.parse('coverage.xml')
+root = tree.getroot()
+files = root.findall('file')
+comments = []
+for file in files:
+    file_name = file.get('name')
+    missing_lines = []
+    for line in file.findall('lines/line'):
+        if line.get('hits') == '0':  # If the line is not covered
+            missing_lines.append(line.get('number'))
+    if missing_lines:
+        comments.append(f'### File: {file_name}\nMissing coverage for lines: {", ".join(missing_lines)}')
+if comments:
+    print("\n\n".join(comments))
+        ")
+
+        # Post the comments for each file with missing lines
+        echo "$coverage_result" | while IFS= read -r comment; do
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -X POST \
+            -d "{\"body\": \"$comment\"}" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments
+        done
