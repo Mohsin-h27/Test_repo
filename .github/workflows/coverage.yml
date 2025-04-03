@@ -45,7 +45,7 @@ jobs:
         echo "::set-output name=pr_comment::${PR_COMMENT_BODY}"
 
     - name: Comment on PR with coverage results
-      uses: peter-evans/comment@v3.0.0  # Use a specific version here
+      uses: peter-evans/create-or-update-comment@v4  # Use a specific version here
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
