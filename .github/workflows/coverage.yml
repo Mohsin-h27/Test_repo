@@ -40,7 +40,7 @@ jobs:
         id: run-script
         run: |
           # Run your script here (e.g., python script.py)
-          python your_script.py > result.txt
+          python script.py > result.txt
           
       - name: Post script results as a comment
         uses: actions/github-script@v6
