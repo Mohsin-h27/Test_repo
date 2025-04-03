@@ -28,11 +28,34 @@ jobs:
 
       - name: Generate .coverage
         run: |
-          coverage run -m pytest tests -k read  # Run tests in the "tests" directory
+          coverage run -m pytest tests  # Run tests in the "tests" directory
 
-      - name: Coverage comment
+      - name: Post Coverage Comment
         uses: py-cov-action/python-coverage-comment-action@v3
         with:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
+          
+      - name: Run Additional Script
+        id: run-script
+        run: |
+          # Run your script and save the output to result.txt
+          python script.py > result.txt
 
+      - name: Post Script Results as a Comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const result = fs.readFileSync('result.txt', 'utf8');
+            const prNumber = ${{ github.event.pull_request.number }};
+            
+            const commentBody = `### Script Results\n\n\`\`\`\n${result}\n\`\`\``;
+            
+            const response = await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: commentBody,
+            });
