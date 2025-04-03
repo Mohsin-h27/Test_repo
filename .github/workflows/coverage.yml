@@ -1,56 +1,52 @@
-name: Pytest Coverage Report
+name: Coverage Report
 
 on:
   pull_request:
+  push:
+    branches:
+      - "main"
 
 jobs:
-  run-tests:
+  generate_coverage:
     runs-on: ubuntu-latest
-
+    permissions:
+      pull-requests: write
+      contents: write
+    name: Generate and Publish Coverage
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - name: Set up Python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'  # Use Python 3.9, or whichever version you need
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest pytest-cov coverage
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
 
-    - name: Run tests for 'read' marker and generate coverage report
-      run: |
-        pytest --cov=app -k "read" --cov-report=xml --maxfail=1
+      - name: Generate .coverage
+        run: |
+          coverage run -m pytest tests -k 'read'  # Run tests in the "tests" directory
 
-    - name: Run tests for 'write' marker and generate coverage report
-      run: |
-        pytest --cov=app -k "write" --cov-report=xml --maxfail=1
+      - name: Coverage comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
 
-    - name: Merge coverage reports for 'read' and 'write' markers
-      run: |
-        pip install coverage
-        coverage combine coverage.xml
-        coverage html -d ./coverage_html
-        coverage report --show-missing > merged_coverage_report.txt
+      - name: Generate .coverage
+        run: |
+          coverage run -m pytest tests -k 'write'  # Run tests in the "tests" directory
 
-    - name: Get PR details
-      id: pr_details
-      run: |
-        echo "Fetching PR details..."
-        PR_COMMENT_BODY=$(cat merged_coverage_report.txt)
-        echo "::set-output name=pr_comment::${PR_COMMENT_BODY}"
+      - name: Coverage comment
+        uses: py-cov-action/python-coverage-comment-action@v3
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
+    
+      
 
-    - name: Comment on PR with coverage results
-      uses: peter-evans/create-or-update-comment@v4  # Use a specific version here
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          ## Coverage Report for `read` and `write` Markers
 
-          \`\`\`
-          ${{ steps.pr_details.outputs.pr_comment }}
-          \`\`\`
+      

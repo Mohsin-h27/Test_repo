@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app.helloworld import hello_world, hello_world2
 
 # Use pytest markers
-@pytest.mark.Read
+@pytest.mark.read
 def test_hello_world2():
     with patch('builtins.print') as mock_print:
         # Call the hello_world2 function
