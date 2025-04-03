@@ -20,19 +20,26 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'  # Use Python 3.9, or whichever version you need
+          python-version: '3.9'
 
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest pytest-cov  # Install pytest and pytest-cov for coverage
 
-      - name: Generate .coverage file
+      - name: Install PyCov
         run: |
-          coverage run -m pytest --cov=api --cov-report=xml tests  # Run tests and generate coverage report in XML format
+          pip install pycov  # Install pycov tool
 
-      - name: Coverage comment
+      - name: Run Tests and Generate Coverage Report
+        run: |
+          coverage run -m pytest  # Run tests with coverage
+          coverage json -o coverage.json  # Generate coverage report in JSON format
+
+      - name: Check Coverage Data
+        run: cat coverage.json  # Optional: Check if the coverage file was generated correctly
+
+      - name: Publish Coverage as PR Comment
         uses: py-cov-action/python-coverage-comment-action@v3
         with:
           GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
+          COVERAGE_PATH: ./coverage.json  # Specify the location of the generated coverage report
