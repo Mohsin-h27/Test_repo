@@ -26,39 +26,20 @@ jobs:
 
     - name: Run tests for 'read' marker and generate coverage report
       run: |
-        pytest --cov=your_code_directory -k "read" --cov-report=xml --maxfail=1
-        # --cov-report=xml generates an XML report for later processing
+        pytest --cov=app -k "read" --cov-report=xml --maxfail=1
 
     - name: Run tests for 'write' marker and generate coverage report
       run: |
-        pytest --cov=your_code_directory -k "write" --cov-report=xml --maxfail=1
-
-    - name: Upload coverage reports as artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: coverage-reports
-        path: |
-          coverage.xml  # Upload both coverage reports
-
-  merge-and-comment-coverage:
-    runs-on: ubuntu-latest
-    needs: run-tests
-    steps:
-    - name: Download coverage reports
-      uses: actions/download-artifact@v2
-      with:
-        name: coverage-reports
-        path: ./coverage
+        pytest --cov=app -k "write" --cov-report=xml --maxfail=1
 
     - name: Merge coverage reports for 'read' and 'write' markers
       run: |
-        # Install the necessary coverage tool for merging XML reports
+        # Install coverage tool to combine the reports
         pip install coverage
-        # Merge the XML reports for 'read' and 'write' markers
-        coverage combine ./coverage/coverage.xml
-        coverage html -d ./coverage_html  # Generate an HTML version (optional for later review)
-        
-        # Create a merged report
+        # Combine the coverage reports from both tests
+        coverage combine coverage.xml
+        coverage html -d ./coverage_html  # Optionally generate HTML for review
+        # Create a merged coverage report
         coverage report --show-missing > merged_coverage_report.txt
 
     - name: Get PR details
