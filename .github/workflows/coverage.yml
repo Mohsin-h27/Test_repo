@@ -30,19 +30,19 @@ jobs:
         run: |
           coverage run -m pytest tests  # Run tests in the "tests" directory
 
-      - name: Coverage comment
+      - name: Post Coverage Comment
         uses: py-cov-action/python-coverage-comment-action@v3
         with:
           GITHUB_TOKEN: ${{ github.token }}
           GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
-
+          
       - name: Run Additional Script
         id: run-script
         run: |
-          # Run your script here (e.g., python script.py)
+          # Run your script and save the output to result.txt
           python script.py > result.txt
-          
-      - name: Post script results as a comment
+
+      - name: Post Script Results as a Comment
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
