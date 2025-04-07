@@ -23,7 +23,7 @@ def get_changed_files(pr_number):
     return changed_files
 
 def authenticate():
-    creds_dict = json.loads(os.environ["GDRIVE_CREDS_JSON"])
+    creds_dict = json.loads(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
     creds = service_account.Credentials.from_service_account_info(
         creds_dict,
         scopes=["https://www.googleapis.com/auth/drive"]
