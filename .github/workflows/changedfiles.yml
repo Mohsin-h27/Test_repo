@@ -27,7 +27,7 @@ jobs:
         run: echo "${{ secrets.GDRIVE_CREDS_JSON }}" > credentials.json
 
       - name: Run sync script if App/ changed
-        run: python3 sync_app_to_drive.py
+        run: python3 package.py
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GDRIVE_CREDS_JSON }}
