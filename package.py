@@ -33,12 +33,26 @@ def authenticate():
 def delete_drive_folder_contents(service, folder_id):
     query = f"'{folder_id}' in parents"
     while True:
-        results = service.files().list(q=query, fields="files(id)").execute()
+        results = service.files().list(q=query, fields="files(id, parents)").execute()
         files = results.get("files", [])
         if not files:
             break
         for file in files:
-            service.files().delete(fileId=file["id"]).execute()
+            try:
+                service.files().delete(fileId=file["id"]).execute()
+                print(f"Deleted: {file['id']}")
+            except Exception as e:
+                print(f"Cannot delete {file['id']}, trying to remove from folder: {e}")
+                try:
+                    service.files().update(
+                        fileId=file["id"],
+                        removeParents=folder_id,
+                        fields="id, parents"
+                    ).execute()
+                    print(f"Removed from folder: {file['id']}")
+                except Exception as inner_e:
+                    print(f"Failed to remove {file['id']} from folder: {inner_e}")
+
 
 def upload_folder(service, local_folder_path, drive_folder_id):
     folder_map = {local_folder_path: drive_folder_id}
