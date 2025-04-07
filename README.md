@@ -2,11 +2,12 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/Mohsin-h27/Test_repo/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                      |    Stmts |     Miss |   Cover |   Missing |
-|-------------------------- | -------: | -------: | ------: | --------: |
-| app/helloworld.py         |        3 |        0 |    100% |           |
-| tests/test\_helloworld.py |       13 |        1 |     92% |        20 |
-|                 **TOTAL** |   **16** |    **1** | **94%** |           |
+| Name                       |    Stmts |     Miss |    Cover |   Missing |
+|--------------------------- | -------: | -------: | -------: | --------: |
+| app/helloworld.py          |        5 |        0 |     100% |           |
+| tests/test\_helloworld2.py |       11 |        0 |     100% |           |
+| tests/test\_helloworld.py  |       11 |        0 |     100% |           |
+|                  **TOTAL** |   **27** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
