@@ -23,15 +23,9 @@ jobs:
       - name: Install dependencies
         run: pip install --upgrade google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
 
-      - name: Write credentials.json from GitHub secret
-        run: echo "${{ secrets.GDRIVE_CREDS_JSON }}" > credentials.json
-
       - name: Run sync script if App/ changed
-        run: python3 package.py
+        run: python3 package_to_drive.py
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GDRIVE_CREDS_JSON }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-
-      - name: Clean up credentials.json
-        run: rm credentials.json
