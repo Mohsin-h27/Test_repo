@@ -1,0 +1,33 @@
+{
+    "users": [
+        {"id": 101, "name": "Alice", "email": "alice@example.com", "organization_id": 1},
+        {"id": 102, "name": "Bob", "email": "bob@example.com", "organization_id": 1},
+        {"id": 103, "name": "Charlie", "email": "charlie@example.com", "organization_id": 2},
+        {"id": 104, "name": "David", "email": "david@example.com", "organization_id": 2},
+        {"id": 105, "name": "Eve", "email": "eve@example.com", "organization_id": 3},
+        {"id": 106, "name": "Frank", "email": "frank@example.com", "organization_id": 3},
+        {"id": 107, "name": "Grace", "email": "grace@example.com", "organization_id": 4},
+        {"id": 108, "name": "Hank", "email": "hank@example.com", "organization_id": 4},
+        {"id": 109, "name": "Ivy", "email": "ivy@example.com", "organization_id": 5},
+        {"id": 110, "name": "Jack", "email": "jack@example.com", "organization_id": 5}
+    ],
+    "tickets": [
+        {"id": 1, "title": "Issue with login", "description": "User cannot log into the system", "status": "open", "user_id": 101, "organization_id": 1},
+        {"id": 2, "title": "Page not loading", "description": "Homepage takes too long to load", "status": "in_progress", "user_id": 102, "organization_id": 1},
+        {"id": 3, "title": "Payment failure", "description": "Transaction not going through", "status": "open", "user_id": 103, "organization_id": 2},
+        {"id": 4, "title": "Bug in checkout", "description": "Checkout page crashes on submit", "status": "resolved", "user_id": 104, "organization_id": 2},
+        {"id": 5, "title": "Email not received", "description": "User did not get password reset email", "status": "open", "user_id": 105, "organization_id": 3},
+        {"id": 6, "title": "Mobile app crash", "description": "App crashes on startup", "status": "in_progress", "user_id": 106, "organization_id": 3},
+        {"id": 7, "title": "Slow performance", "description": "System response is very slow", "status": "open", "user_id": 107, "organization_id": 4},
+        {"id": 8, "title": "UI issue", "description": "Button misaligned on profile page", "status": "resolved", "user_id": 108, "organization_id": 4},
+        {"id": 9, "title": "Database error", "description": "Cannot connect to the database", "status": "in_progress", "user_id": 109, "organization_id": 5},
+        {"id": 10, "title": "Security concern", "description": "User session not expiring properly", "status": "open", "user_id": 110, "organization_id": 5}
+    ],
+    "organizations": [
+        {"id": 1, "name": "Tech Corp", "industry": "Software", "location": "San Francisco"},
+        {"id": 2, "name": "Health Solutions", "industry": "Healthcare", "location": "New York"},
+        {"id": 3, "name": "EduLearn", "industry": "Education", "location": "Boston"},
+        {"id": 4, "name": "Green Energy", "industry": "Renewable Energy", "location": "Austin"},
+        {"id": 5, "name": "Retailify", "industry": "E-commerce", "location": "Seattle"}
+    ]
+}

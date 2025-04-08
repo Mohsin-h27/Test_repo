@@ -1,0 +1,212 @@
+{
+    "activities": [
+        {
+            "kind": "youtube#activity",
+            "etag": "etag1",
+            "id": "activity1"
+        },
+        {
+            "kind": "youtube#activity",
+            "etag": "etag2",
+            "id": "activity2"
+        }
+    ],
+    "captions": {
+        "caption1": {
+            "id": "caption1",
+            "snippet": {
+                "videoId": "video1"
+            }
+        },
+        "caption2": {
+            "id": "caption2",
+            "snippet": {
+                "videoId": "video2"
+            }
+        }
+    },
+    "channels": {
+        "channel1": {
+            "part": "snippet,contentDetails,statistics",
+            "categoryId": "10",
+            "forUsername": "TechGuru",
+            "hl": "en",
+            "id": "channel1",
+            "managedByMe": false,
+            "maxResults": 5,
+            "mine": false,
+            "mySubscribers": true,
+            "onBehalfOfContentOwner": null
+        },
+        "channel2": {
+            "part": "snippet,statistics",
+            "categoryId": "20",
+            "forUsername": "FoodieFun",
+            "hl": "es",
+            "id": "channel2",
+            "managedByMe": true,
+            "maxResults": 10,
+            "mine": true,
+            "mySubscribers": false,
+            "onBehalfOfContentOwner": "CompanyXYZ"
+        },
+        "channel3": {
+            "part": "contentDetails,statistics",
+            "categoryId": "15",
+            "forUsername": "TravelVlogs",
+            "hl": "fr",
+            "id": "channel3",
+            "managedByMe": false,
+            "maxResults": 7,
+            "mine": false,
+            "mySubscribers": true,
+            "onBehalfOfContentOwner": null
+        }
+    },
+    "channelSections": {
+        "section1": {
+            "id": "section1",
+            "snippet": {
+                "channelId": "channel1",
+                "type": "allPlaylists"
+            }
+        },
+        "section2": {
+            "id": "section2",
+            "snippet": {
+                "channelId": "channel2",
+                "type": "completedEvents"
+            }
+        },
+        "section3": {
+            "id": "section3",
+            "snippet": {
+                "channelId": "channel1",
+                "type": "multipleChannels"
+            }
+        }
+    },
+    "channelStatistics": {
+        "commentCount": 100,
+        "hiddenSubscriberCount": false,
+        "subscriberCount": 1000000,
+        "videoCount": 500,
+        "viewCount": 10000000
+    },
+    "channelBanners": [],
+    "comments": {
+        "comment1": {
+            "id": "comment1",
+            "snippet": {
+                "videoId": "video1",
+                "parentId": null
+            },
+            "moderationStatus": "published",
+            "bannedAuthor": false
+        },
+        "comment2": {
+            "id": "comment2",
+            "snippet": {
+                "videoId": "video1",
+                "parentId": "comment1"
+            },
+            "moderationStatus": "heldForReview",
+            "bannedAuthor": false
+        },
+        "comment3": {
+            "id": "comment3",
+            "snippet": {
+                "videoId": "video2",
+                "parentId": null
+            },
+            "moderationStatus": "rejected",
+            "bannedAuthor": true
+        }
+    },
+    "commentThreads": {
+        "thread1": {
+            "id": "thread1",
+            "snippet": {
+                "channelId": "channel1",
+                "videoId": "video1"
+            },
+            "comments": [
+                "comment1",
+                "comment2"
+            ]
+        },
+        "thread2": {
+            "id": "thread2",
+            "snippet": {
+                "channelId": "channel2",
+                "videoId": "video2"
+            },
+            "comments": [
+                "comment3"
+            ]
+        }
+    },
+    "subscriptions": {
+        "sub1": {
+            "id": "sub1",
+            "snippet": {
+                "channelId": "channel1",
+                "resourceId": {
+                    "kind": "youtube#channel",
+                    "channelId": "channel2"
+                }
+            }
+        },
+        "sub2": {
+            "id": "sub2",
+            "snippet": {
+                "channelId": "channel2",
+                "resourceId": {
+                    "kind": "youtube#channel",
+                    "channelId": "channel1"
+                }
+            }
+        }
+    },
+    "videoCategories": {
+        "category1": {
+            "id": "1",
+            "snippet": {
+                "title": "Film & Animation",
+                "regionCode": "US"
+            }
+        },
+        "category2": {
+            "id": "2",
+            "snippet": {
+                "title": "Autos & Vehicles",
+                "regionCode": "US"
+            }
+        },
+        "category3": {
+            "id": "10",
+            "snippet": {
+                "title": "Music",
+                "regionCode": "CA"
+            }
+        }
+    },
+    "memberships": {
+        "member1": {
+            "id": "member1",
+            "snippet": {
+                "memberChannelId": "channel1",
+                "hasAccessToLevel": "level1",
+                "mode": "fanFunding"
+            }
+        },
+        "member2": {
+            "id": "member2",
+            "snippet": {
+                "memberChannelId": "channel2",
+                "hasAccessToLevel": "level2",
+                "mode": "sponsors"
+            }
+        }
+    }
+}

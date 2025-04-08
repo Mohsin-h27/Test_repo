@@ -25,7 +25,7 @@ jobs:
 
       - name: Generate .coverage
         run: |
-          coverage run -m pytest tests  # Run tests in the "tests" directory
+          coverage run -m pytest "Unit Tests"  # Run tests in the "tests" directory
 
       - name: Post Coverage Comment
         uses: py-cov-action/python-coverage-comment-action@v3
