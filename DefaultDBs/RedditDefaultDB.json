@@ -1,0 +1,201 @@
+
+{
+  "users": {
+    "user_1": {
+      "profile": {
+        "userId": "user_1",
+        "displayName": "Alex Johnson",
+        "email": "alex.johnson@example.com",
+        "createdTimestamp": 1690819200
+      },
+      "drafts": [
+        {
+          "draftId": "drft_1001",
+          "subject": "Meeting Agenda",
+          "body": "Draft content for meeting agenda...",
+          "lastModified": 1690822800
+        },
+        {
+          "draftId": "drft_1002",
+          "subject": "Follow-up on Project X",
+          "body": "Need to discuss next steps...",
+          "lastModified": 1690830000
+        },
+        {
+          "draftId": "drft_1003",
+          "subject": "Vacation Notification",
+          "body": "I will be out of office from ...",
+          "lastModified": 1690840000
+        },
+        {
+          "draftId": "drft_1004",
+          "subject": "",
+          "body": "Empty subject draft, just a test",
+          "lastModified": 1690850000
+        }
+      ],
+      "messages": [
+        {
+          "messageId": "msg_2001",
+          "threadId": "thd_3001",
+          "labelIds": ["lbl_inbox", "lbl_important"],
+          "timestamp": 1690819400,
+          "from": "boss@example.com",
+          "to": ["alex.johnson@example.com"],
+          "subject": "Weekly Sync",
+          "snippet": "Hi Alex, let's schedule our weekly sync..."
+        },
+        {
+          "messageId": "msg_2002",
+          "threadId": "thd_3001",
+          "labelIds": ["lbl_inbox"],
+          "timestamp": 1690819500,
+          "from": "alex.johnson@example.com",
+          "to": ["boss@example.com"],
+          "subject": "RE: Weekly Sync",
+          "snippet": "Sure, how about Friday at 10 AM?"
+        },
+        {
+          "messageId": "msg_2003",
+          "threadId": "thd_3002",
+          "labelIds": ["lbl_inbox", "lbl_promotions"],
+          "timestamp": 1690820000,
+          "from": "news@updates.example.com",
+          "to": ["alex.johnson@example.com"],
+          "subject": "Special Offer",
+          "snippet": "Get 50% off on your next purchase..."
+        },
+        {
+          "messageId": "msg_2004",
+          "threadId": "thd_3003",
+          "labelIds": ["lbl_inbox"],
+          "timestamp": 1690821000,
+          "from": "john.doe@example.org",
+          "to": ["alex.johnson@example.com"],
+          "subject": "Weekend Plans",
+          "snippet": "Hey Alex, are we still meeting this weekend?"
+        },
+        {
+          "messageId": "msg_2005",
+          "threadId": "thd_3002",
+          "labelIds": ["lbl_inbox", "lbl_spam"],
+          "timestamp": 1690822000,
+          "from": "unknown@spammy.biz",
+          "to": ["alex.johnson@example.com"],
+          "subject": "Spam Email",
+          "snippet": "Click here to claim your prize..."
+        }
+      ],
+      "threads": [
+        {
+          "threadId": "thd_3001",
+          "messageIds": ["msg_2001", "msg_2002"],
+          "history": [
+            {
+              "type": "messageAppended",
+              "messageId": "msg_2002",
+              "timestamp": 1690819500
+            }
+          ]
+        },
+        {
+          "threadId": "thd_3002",
+          "messageIds": ["msg_2003", "msg_2005"],
+          "history": []
+        },
+        {
+          "threadId": "thd_3003",
+          "messageIds": ["msg_2004"],
+          "history": []
+        }
+      ],
+      "labels": [
+        {
+          "labelId": "lbl_inbox",
+          "labelName": "Inbox",
+          "color": "#4285F4"
+        },
+        {
+          "labelId": "lbl_important",
+          "labelName": "Important",
+          "color": "#EA4335"
+        },
+        {
+          "labelId": "lbl_promotions",
+          "labelName": "Promotions",
+          "color": "#FBBC05"
+        },
+        {
+          "labelId": "lbl_spam",
+          "labelName": "Spam",
+          "color": "#DB4437"
+        }
+      ],
+      "settings": {
+        "signature": "Best,\\nAlex",
+        "sendAs": [
+          {
+            "sendAsEmail": "alex.johnson@example.com",
+            "displayName": "Alex Johnson",
+            "replyToAddress": "alex.johnson@example.com",
+            "isPrimary": true
+          },
+          {
+            "sendAsEmail": "alex+alias@example.com",
+            "displayName": "Alex Work Alias",
+            "replyToAddress": "alex+alias@example.com",
+            "isPrimary": false
+          }
+        ]
+      },
+      "history": [
+        {
+          "timestamp": 1690819600,
+          "event": "account_created"
+        },
+        {
+          "timestamp": 1690823000,
+          "event": "draft_saved"
+        }
+      ],
+      "watch": {
+        "labelIdsWatched": ["lbl_important"],
+        "threadIdsWatched": ["thd_3003"]
+      }
+    },
+    "user_2": {
+      "profile": {
+        "userId": "user_2",
+        "displayName": "Chris Smith",
+        "email": "chris.smith@example.com",
+        "createdTimestamp": 1690819205
+      },
+      "drafts": [],
+      "messages": [],
+      "threads": [],
+      "labels": [],
+      "settings": {
+        "signature": "Regards,\\nChris",
+        "sendAs": [
+          {
+            "sendAsEmail": "chris.smith@example.com",
+            "displayName": "Chris Smith",
+            "replyToAddress": "chris.smith@example.com",
+            "isPrimary": true
+          }
+        ]
+      },
+      "history": [],
+      "watch": {}
+    }
+  },
+  "resources": {
+    "documentationLinks": ["https://example.com/help", "https://example.com/faq"]
+  },
+  "counters": {
+    "nextDraftId": 1005,
+    "nextMessageId": 2006,
+    "nextThreadId": 3004,
+    "usersCount": 2
+  }
+}

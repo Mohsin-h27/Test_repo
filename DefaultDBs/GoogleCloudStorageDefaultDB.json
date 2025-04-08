@@ -1,0 +1,35 @@
+{
+    "buckets": {
+        "test-bucket-1": {
+            "name": "test-bucket-1",
+            "project": "test-project",
+            "metageneration": "1",
+            "softDeleted": false,
+            "objects": [],
+            "enableObjectRetention": false,
+            "iamPolicy": {
+                "bindings": []
+            },
+            "storageLayout": {},
+            "generation": "1",
+            "retentionPolicyLocked": false
+        },
+        "test-bucket-2": {
+            "name": "test-bucket-2",
+            "project": "test-project",
+            "metageneration": "2",
+            "softDeleted": true,
+            "objects": [
+                "file1",
+                "file2"
+            ],
+            "enableObjectRetention": true,
+            "iamPolicy": {
+                "bindings": []
+            },
+            "storageLayout": {},
+            "generation": "2",
+            "retentionPolicyLocked": true
+        }
+    }
+}
