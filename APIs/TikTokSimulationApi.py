@@ -12,7 +12,6 @@ Execute this file directly to run the test suite (using unittest).
 import json
 import uuid
 import datetime
-import unittest
 
 ###############################################################################
 # In-Memory Database
