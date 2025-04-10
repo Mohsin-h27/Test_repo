@@ -34,9 +34,9 @@ jobs:
       - name: Set up gh-pages branch
         run: |
           mkdir -p docs/coverage
-          rm -rf docs/coverage/*
-          cp -r htmlcov/* docs/coverage/
-          touch docs/coverage/.nojekyll
+          rm -rf docs/*
+          cp -r htmlcov/* docs/
+          touch docs/.nojekyll
 
       - name: Commit and push coverage report to gh-pages
         env:
