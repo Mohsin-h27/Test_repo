@@ -1,37 +1,54 @@
-name: Coverage Report
+name: Generate HTML Coverage Report
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main  # Only run on pushes to the 'main' branch
 
 jobs:
-  coverage:
+  coverage-report:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
 
     steps:
-      - uses: actions/checkout@v3
+      # Checkout the code
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
+      # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
 
+      # Install dependencies
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install coverage pytest
+          pip install pytest coverage
 
-      - name: Run tests and generate HTML report
+      # Run tests and generate coverage report
+      - name: Run tests and generate coverage report
         run: |
           coverage run --source=. -m pytest
           coverage html
 
-      - name: Upload to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./htmlcov
+      # Set up the coverage report directory in gh-pages branch
+      - name: Set up gh-pages branch
+        run: |
+          # Create a new directory (or use the existing one) for the HTML report
+          mkdir -p docs/coverage
+          rm -rf docs/coverage/*
+          cp -r htmlcov/* docs/coverage/
+          touch docs/coverage/.nojekyll  # Prevent Jekyll from processing the content
+
+      # Commit the new coverage report to gh-pages branch
+      - name: Commit and push coverage report to gh-pages
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/coverage
+          git commit -m "Update coverage report" || echo "No changes to commit"
+          
+          # Push to the gh-pages branch (create it if necessary)
+          git push origin HEAD:gh-pages
