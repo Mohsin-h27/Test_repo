@@ -47,7 +47,7 @@ jobs:
           git config user.email "github-actions@github.com"
 
           # Switch to a fresh gh-pages branch
-          git checkout gh-pages
+          git checkout -B gh-pages
 
           git add docs
           git commit -m "Update coverage report" || echo "No changes to commit"
