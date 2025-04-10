@@ -3,52 +3,48 @@ name: Generate HTML Coverage Report
 on:
   push:
     branches:
-      - main  # Only run on pushes to the 'main' branch
+      - main
+
+permissions:
+  contents: write  # 🔑 This gives write access to push to branches
 
 jobs:
   coverage-report:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout the code
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      # Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
 
-      # Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest coverage
 
-      # Run tests and generate coverage report
       - name: Run tests and generate coverage report
         run: |
           coverage run --source=. -m pytest
           coverage html
 
-      # Set up the coverage report directory in gh-pages branch
       - name: Set up gh-pages branch
         run: |
-          # Create a new directory (or use the existing one) for the HTML report
           mkdir -p docs/coverage
           rm -rf docs/coverage/*
           cp -r htmlcov/* docs/coverage/
-          touch docs/coverage/.nojekyll  # Prevent Jekyll from processing the content
+          touch docs/coverage/.nojekyll
 
-      # Commit the new coverage report to gh-pages branch
       - name: Commit and push coverage report to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git checkout -B gh-pages
           git add docs/coverage
           git commit -m "Update coverage report" || echo "No changes to commit"
-          
-          # Push to the gh-pages branch (create it if necessary)
-          git push origin HEAD:gh-pages
+          git push origin gh-pages --force
