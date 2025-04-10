@@ -6,11 +6,12 @@ on:
       - main
 
 permissions:
-  contents: write  # 🔑 This gives write access to push to branches
+  contents: write  # Gives write access to push to branches
 
 jobs:
   coverage-report:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -31,9 +32,9 @@ jobs:
           coverage run --source=. -m pytest
           coverage html
 
-      - name: Set up gh-pages branch
+      - name: Set up gh-pages branch with docs/
         run: |
-          mkdir -p docs/coverage
+          mkdir -p docs
           rm -rf docs/*
           cp -r htmlcov/* docs/
           touch docs/.nojekyll
@@ -44,7 +45,10 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
+          # Switch to a fresh gh-pages branch
           git checkout -B gh-pages
-          git add docs/coverage
+
+          git add docs
           git commit -m "Update coverage report" || echo "No changes to commit"
           git push origin gh-pages --force
