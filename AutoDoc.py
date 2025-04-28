@@ -351,6 +351,7 @@ for name in os.listdir('APIs'):
         # step 3
 
         output_dir =  f'{output_folder}/final'
+        os.makedirs('md_files', exist_ok=True)
         combiner = MarkdownCombiner(input_directory=output_dir, output_filename=f"{API_name.split('APISimulation')[0]}.md")
         combiner.combine_markdown()
 
