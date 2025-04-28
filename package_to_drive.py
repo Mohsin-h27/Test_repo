@@ -183,7 +183,7 @@ if __name__ == "__main__":
         print("❌ PR number not found in environment.")
         exit(1)
 
-    changed_files = get_changed_files(pr_number)
+    changed_files = get_changed_files_via_api(pr_number)
     if not changed_files:
         print("🟡 No changes detected in PR.")
         exit(0)
