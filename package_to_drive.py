@@ -12,18 +12,44 @@ FOLDER_CONFIGS = {
 
 # === HELPERS ===
 
-def get_changed_files(pr_number):
-    print(f"🔍 Getting changed files for PR #{pr_number}...")
-    result = subprocess.run(
-        ["gh", "pr", "view", str(pr_number), "--json", "files", "--jq", ".files[].path"],
-        capture_output=True,
-        text=True
-    )
-    if result.returncode != 0:
-        print("❌ Failed to get changed files from GitHub CLI (view).")
-        print(result.stderr)
+import requests
+
+def get_changed_files_via_api(pr_number):
+    """Fetch changed files in a PR using GitHub REST API."""
+    print(f"🔍 Getting changed files for PR #{pr_number} using REST API...")
+    
+    repo = os.getenv("GITHUB_REPOSITORY")  # example: "user/repo"
+    token = os.getenv("GITHUB_TOKEN")  # personal access token or GitHub Actions token
+    
+    if not repo or not token:
+        print("❌ Missing GITHUB_REPOSITORY or GITHUB_TOKEN environment variables.")
         return []
-    return result.stdout.strip().splitlines()
+    
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github+json"
+    }
+    
+    url = f"https://api.github.com/repos/{repo}/pulls/{pr_number}/files"
+    
+    changed_files = []
+    page = 1
+
+    while True:
+        response = requests.get(url, headers=headers, params={"page": page, "per_page": 100})
+        if response.status_code != 200:
+            print(f"❌ Failed to fetch changed files: {response.status_code} {response.text}")
+            return []
+        
+        files = response.json()
+        if not files:
+            break
+        
+        changed_files.extend(file["filename"] for file in files)
+        page += 1
+
+    return changed_files
+
 
 
 def authenticate():
