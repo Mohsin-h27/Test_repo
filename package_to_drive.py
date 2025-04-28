@@ -69,7 +69,7 @@ def get_changed_api_folders(changed_files):
             parts = file_path.split('/')
             if len(parts) >= 2:
                 changed_folders.add(parts[1])
-    return list(changed_folders)
+    return list(set(changed_folders))
 
 def find_drive_file(service, parent_id, name, is_folder=True):
     """Find file or folder by name inside a parent folder."""
