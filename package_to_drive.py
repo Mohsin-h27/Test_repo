@@ -63,117 +63,85 @@ def authenticate():
 
 def get_changed_api_folders(changed_files):
     """Identify which API subfolders have changes."""
-    changed_folders = set()
+    changed_files_updated = list()
     for file_path in changed_files:
         if file_path.startswith("APIs/"):
-            parts = file_path.split('/')
-            if len(parts) >= 2:
-                changed_folders.add(parts[1])
-    return list(set(changed_folders))
+            changed_files_updated.append(file_path)
 
-def find_drive_file(service, parent_id, name, is_folder=True):
-    """Find file or folder by name inside a parent folder."""
-    mime_type = "application/vnd.google-apps.folder" if is_folder else None
-    query = f"'{parent_id}' in parents and name = '{name}' and trashed = false"
+    return changed_files_updated
+
+
+def find_file_in_folder(service, folder_id, name, mime_type=None):
+    """Find file/folder with `name` in given `folder_id`."""
+    query = f"'{folder_id}' in parents and trashed=false and name='{name}'"
     if mime_type:
-        query += f" and mimeType = '{mime_type}'"
-    results = service.files().list(q=query, fields="files(id, name)").execute()
+        query += f" and mimeType='{mime_type}'"
+    results = service.files().list(q=query, fields="files(id, name, mimeType)").execute()
     files = results.get('files', [])
     return files[0] if files else None
 
-def delete_drive_folder(service, folder_id):
-    """Move a folder to trash."""
+def traverse_path_to_file(service, root_folder_id, path_segments):
+    """Traverse path, creating missing folders/files, and return file ID."""
+    current_id = root_folder_id
+
+    for segment in path_segments[:-1]:
+        folder = find_file_in_folder(service, current_id, segment, mime_type='application/vnd.google-apps.folder')
+        if not folder:
+            # Create missing folder
+            folder_metadata = {
+                'name': segment,
+                'mimeType': 'application/vnd.google-apps.folder',
+                'parents': [current_id]
+            }
+            folder = service.files().create(body=folder_metadata, fields='id').execute()
+        current_id = folder['id']
+
+    # Handle the final file
+    filename = path_segments[-1]
+    file = find_file_in_folder(service, current_id, filename)
+    if not file:
+        # Create missing file (empty)
+        file_metadata = {
+            'name': filename,
+            'parents': [current_id],
+            'mimeType': 'application/octet-stream'
+        }
+        media = service.files().create(body=file_metadata, fields='id').execute()
+        return media['id']
+    
+    return file['id']
+
+def update_drive_file_content(service, file_id, local_path):
+    """Update the Drive file content from local file."""
+    mime_type, _ = mimetypes.guess_type(local_path)
+    media = MediaFileUpload(local_path, resumable=True)
     try:
-        service.files().update(fileId=folder_id, body={"trashed": True}).execute()
-        print(f"🗑️ Trashed folder ID: {folder_id}")
+        service.files().update(
+            fileId=file_id,
+            media_body=media,
+            media_mime_type=mime_type
+        ).execute()
+    except HttpError as error:
+        raise RuntimeError(f"Drive update failed: {error}")
+
+def sync_local_file_to_drive_path(drive_folder_id: str, filepath: str):
+    """
+    Sync local file to a matching path in Drive folder.
+    Example: filepath='spaces/messages/init.py'
+    """
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"Local file '{filepath}' not found.")
+
+    service = authenticate()
+    path_parts = filepath.replace("\\", "/").split("/")
+    try:
+        file_id = traverse_path_to_file(service, drive_folder_id, path_parts[1:])
+        update_drive_file_content(service, file_id, filepath)
+        print(f"✅ Synced: {filepath} → Drive file ID {file_id}")
     except Exception as e:
-        print(f"⚠️ Failed to trash folder: {e}")
-
-def upload_folder_to_drive(service, local_folder_path, parent_drive_id):
-    """Recursively upload a local folder and maintain subfolders structure."""
-    folder_name = os.path.basename(local_folder_path)
-    folder_metadata = {
-        'name': folder_name,
-        'mimeType': 'application/vnd.google-apps.folder',
-        'parents': [parent_drive_id]
-    }
-    folder = service.files().create(body=folder_metadata, fields='id').execute()
-    folder_id = folder['id']
-
-    for root, dirs, files in os.walk(local_folder_path):
-        # Create subfolder paths inside Drive
-        rel_path = os.path.relpath(root, local_folder_path)
-        if rel_path == '.':
-            current_drive_folder_id = folder_id
-        else:
-            # Create nested folders if needed
-            path_parts = rel_path.split(os.sep)
-            current_drive_folder_id = folder_id
-            for part in path_parts:
-                existing = find_drive_file(service, current_drive_folder_id, part, is_folder=True)
-                if existing:
-                    current_drive_folder_id = existing['id']
-                else:
-                    subfolder_metadata = {
-                        'name': part,
-                        'mimeType': 'application/vnd.google-apps.folder',
-                        'parents': [current_drive_folder_id]
-                    }
-                    created = service.files().create(body=subfolder_metadata, fields='id').execute()
-                    current_drive_folder_id = created['id']
-
-        for file_name in files:
-            file_path = os.path.join(root, file_name)
-            upload_file_to_drive(service, file_path, current_drive_folder_id)
-    print(f"✅ Uploaded full folder: {folder_name}")
-    return folder_id
+        print(f"❌ Error: {e}")
 
 
-def upload_file_to_drive(service, local_file_path, parent_folder_id):
-    """Upload a single file."""
-    file_metadata = {
-        'name': os.path.basename(local_file_path),
-        'parents': [parent_folder_id]
-    }
-    media = MediaFileUpload(local_file_path, resumable=True)
-    service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    print(f"⬆️ Uploaded file: {local_file_path}")
-
-def find_drive_folder_for_file(file_path):
-    """Find the drive folder ID based on file path prefix."""
-    for prefix, folder_id in FOLDER_CONFIGS.items():
-        if file_path.startswith(prefix):
-            return folder_id
-    return None
-
-def upload_or_update_file(service, local_path, drive_folder_id):
-    """Upload or update an individual file."""
-    file_name = os.path.basename(local_path)
-    query = f"'{drive_folder_id}' in parents and name = '{file_name}' and trashed = false"
-    result = service.files().list(q=query, fields="files(id, parents)").execute()
-    existing_files = result.get("files", [])
-
-    if existing_files:
-        for file in existing_files:
-            try:
-                media = MediaFileUpload(local_path, resumable=True)
-                service.files().update(
-                    fileId=file['id'],
-                    media_body=media,
-                    supportsAllDrives=True,
-                    fields='id, name'
-                ).execute()
-                print(f"⬆️ Updated: {local_path}")
-            except Exception as e:
-                print(f"⚠️ Cannot update {file_name}: {e}")
-    else:
-        try:
-            metadata = {"name": file_name, "parents": [drive_folder_id]}
-            media = MediaFileUpload(local_path, resumable=True)
-            service.files().create(body=metadata, media_body=media, fields="id").execute()
-            print(f"📁 Created: {file_name}")
-        except Exception as e:
-            print(f"⚠️ Cannot create {file_name}: {e}")
 
 # === MAIN ===
 
@@ -189,21 +157,13 @@ if __name__ == "__main__":
         exit(0)
 
     service = authenticate()
-    changed_api_folders = get_changed_api_folders(changed_files)
+    changed_api_files = get_changed_api_folders(changed_files)
 
-    if changed_api_folders:
+    if changed_api_files:
         api_drive_folder_id = FOLDER_CONFIGS["APIs/"]
-        for api_folder_name in changed_api_folders:
-            # 1. Delete existing folder in Drive
-            drive_api_folder = find_drive_file(service, api_drive_folder_id, api_folder_name)
-            if drive_api_folder:
-                delete_drive_folder(service, drive_api_folder["id"])
-
-            # 2. Upload fresh local folder
-            local_api_path = os.path.join("APIs", api_folder_name)
-            if os.path.exists(local_api_path):
-                upload_folder_to_drive(service, local_api_path, api_drive_folder_id)
-            else:
-                print(f"⚠️ Local API folder not found: {local_api_path}")
+        for file in changed_api_files:
+            sync_local_file_to_drive_path(api_drive_folder_id, file)
+    else:
+        print("🟡 No API changes detected in PR.")
 
                 
