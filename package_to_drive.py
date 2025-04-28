@@ -13,18 +13,18 @@ FOLDER_CONFIGS = {
 # === HELPERS ===
 
 def get_changed_files(pr_number):
-    """Get list of changed files in a PR."""
     print(f"🔍 Getting changed files for PR #{pr_number}...")
     result = subprocess.run(
-        ["gh", "pr", "diff", str(pr_number), "--name-only"],
+        ["gh", "pr", "view", str(pr_number), "--json", "files", "--jq", ".files[].path"],
         capture_output=True,
         text=True
     )
     if result.returncode != 0:
-        print("❌ Failed to get changed files from GitHub CLI.")
+        print("❌ Failed to get changed files from GitHub CLI (view).")
         print(result.stderr)
         return []
     return result.stdout.strip().splitlines()
+
 
 def authenticate():
     """Authenticate using service account."""
