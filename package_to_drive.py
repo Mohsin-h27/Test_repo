@@ -81,17 +81,35 @@ def find_file_in_folder(service, folder_id, name, mime_type=None):
     return files[0] if files else None
 
 def traverse_path_to_file(service, root_folder_id, path_segments):
-    """Traverse nested folders to reach the target file."""
+    """Traverse path, creating missing folders/files, and return file ID."""
     current_id = root_folder_id
+
     for segment in path_segments[:-1]:
         folder = find_file_in_folder(service, current_id, segment, mime_type='application/vnd.google-apps.folder')
         if not folder:
-            raise FileNotFoundError(f"Folder '{segment}' not found in Drive.")
+            # Create missing folder
+            folder_metadata = {
+                'name': segment,
+                'mimeType': 'application/vnd.google-apps.folder',
+                'parents': [current_id]
+            }
+            folder = service.files().create(body=folder_metadata, fields='id').execute()
         current_id = folder['id']
-    target = find_file_in_folder(service, current_id, path_segments[-1])
-    if not target:
-        raise FileNotFoundError(f"File '{path_segments[-1]}' not found in Drive.")
-    return target['id']
+
+    # Handle the final file
+    filename = path_segments[-1]
+    file = find_file_in_folder(service, current_id, filename)
+    if not file:
+        # Create missing file (empty)
+        file_metadata = {
+            'name': filename,
+            'parents': [current_id],
+            'mimeType': 'application/octet-stream'
+        }
+        media = service.files().create(body=file_metadata, fields='id').execute()
+        return media['id']
+    
+    return file['id']
 
 def update_drive_file_content(service, file_id, local_path):
     """Update the Drive file content from local file."""
