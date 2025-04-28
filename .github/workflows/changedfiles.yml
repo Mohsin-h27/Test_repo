@@ -21,11 +21,12 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install --upgrade google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
+        run: pip install --upgrade google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib requests
 
       - name: Run sync script if App/ changed
-        run: python3 package_to_drive.py
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GDRIVE_CREDS_JSON }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GDRIVE_CREDS_JSON }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 package_to_drive.py
