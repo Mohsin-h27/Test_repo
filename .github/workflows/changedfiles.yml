@@ -30,3 +30,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python3 package_to_drive.py
+      
+      - name: Run AutoDoc
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GDRIVE_CREDS_JSON }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python3 AutoDoc.py
