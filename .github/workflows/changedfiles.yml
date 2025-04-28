@@ -21,7 +21,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install --upgrade google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib requests
+        run: pip install --upgrade google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib requests pydoc-markdown
 
       - name: Run sync script if App/ changed
         env:
