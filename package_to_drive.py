@@ -106,6 +106,35 @@ def upload_local_folder_to_drive(service, local_folder_path, drive_folder_id):
             file_path = os.path.join(root, file)
             upload_file_to_drive(service, current_drive_parent_id, file_path)
 
+def delete_api_folder(service, folder_name, parent_folder_id):
+    """Find and delete an existing API folder by name under a parent."""
+    query = (
+        f"'{parent_folder_id}' in parents and "
+        f"name = '{folder_name}' and "
+        f"mimeType = 'application/vnd.google-apps.folder' and "
+        f"trashed = false"
+    )
+    results = service.files().list(q=query, spaces='drive', fields="files(id)").execute()
+    folders = results.get('files', [])
+    
+    if folders:
+        folder_id = folders[0]['id']
+        print(f"🗑️ Deleting existing folder '{folder_name}' from Drive...")
+        service.files().update(fileId=folder_id, body={'trashed': True}).execute()
+    else:
+        print(f"ℹ️ No existing folder '{folder_name}' found to delete.")
+
+def create_api_folder(service, folder_name, parent_folder_id):
+    """Create a new API folder under a parent and return its ID."""
+    print(f"📁 Creating new folder '{folder_name}' in Drive...")
+    folder_metadata = {
+        'name': folder_name,
+        'mimeType': 'application/vnd.google-apps.folder',
+        'parents': [parent_folder_id]
+    }
+    created_folder = service.files().create(body=folder_metadata, fields='id').execute()
+    return created_folder['id']
+
 
 if __name__ == "__main__":
     pr_number = os.getenv("PR_NUMBER")
@@ -122,8 +151,10 @@ if __name__ == "__main__":
 
     if changed_api_folders:
         service = authenticate()
-        api_drive_folder_id = FOLDER_CONFIGS["APIs/"]
+        root_drive_folder_id = FOLDER_CONFIGS["APIs/"]
         for folder in changed_api_folders:
+            delete_api_folder(service, folder,root_drive_folder_id)
+            api_drive_folder_id = create_api_folder(service, folder, root_drive_folder_id)
             local_folder_path = os.path.join("APIs", folder)
             if os.path.isdir(local_folder_path):
                 upload_local_folder_to_drive(service, local_folder_path, api_drive_folder_id)
