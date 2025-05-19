@@ -1,0 +1,4 @@
+- name: Show tag name and pre-release status
+  run: |
+    echo "Tag: ${{ github.event.release.tag_name }}"
+    echo "Is pre-release? ${{ github.event.release.prerelease }}"
