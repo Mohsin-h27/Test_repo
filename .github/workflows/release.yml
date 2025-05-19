@@ -1,4 +1,18 @@
-- name: Show tag name and pre-release status
-  run: |
-    echo "Tag: ${{ github.event.release.tag_name }}"
-    echo "Is pre-release? ${{ github.event.release.prerelease }}"
+name: Generate HTML Coverage Report
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write  # Gives write access to push to branches
+
+jobs:
+  coverage-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show tag name and pre-release status
+        run: |
+          echo "Tag: ${{ github.event.release.tag_name }}"
+          echo "Is pre-release? ${{ github.event.release.prerelease }}"
