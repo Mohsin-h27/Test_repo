@@ -1,18 +1,30 @@
-name: Generate HTML Coverage Report
+name: Get Latest Release on Push
 
 on:
   push:
     branches:
       - main
 
-permissions:
-  contents: write  # Gives write access to push to branches
-
 jobs:
-  coverage-report:
+  latest-release:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Show tag name and pre-release status
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get latest full release tag
+        id: get_release
         run: |
-          echo "Tag: ${{ github.event.release.tag_name }}"
-          echo "Is pre-release? ${{ github.event.release.prerelease }}"
+          echo "Fetching latest release from GitHub API..."
+          response=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest)
+          tag_name=$(echo "$response" | jq -r '.tag_name')
+          prerelease=$(echo "$response" | jq -r '.prerelease')
+
+          echo "Latest release tag: $tag_name"
+          echo "Is pre-release: $prerelease"
+
+          echo "release_tag=$tag_name" >> $GITHUB_OUTPUT
+
+      - name: Use the latest release tag
+        run: echo "Latest release: ${{ steps.get_release.outputs.release_tag }}"
