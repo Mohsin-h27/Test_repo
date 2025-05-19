@@ -25,6 +25,3 @@ jobs:
           echo "Is pre-release: $prerelease"
 
           echo "release_tag=$tag_name" >> $GITHUB_OUTPUT
-
-      - name: Use the latest release tag
-        run: echo "Latest release: ${{ steps.get_release.outputs.release_tag }}"
